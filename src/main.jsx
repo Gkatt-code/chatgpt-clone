@@ -7,6 +7,8 @@ import DashboardPage from './routes/dashboardPage/DashboardPage.jsx'
 import ChatPage from './routes/chatPage/ChatPage.jsx'
 import RootLayout from './layouts/rootLayout/RootLayout.jsx'
 import DashboardLayout from './layouts/dashboardLayout/DashboardLayout.jsx'
+import SigninPage from './routes/signinPage/SigninPage.jsx'
+import SignupPage from './routes/signupPage/SignupPage.jsx'
 
 const router = createBrowserRouter([
   {
@@ -15,6 +17,14 @@ const router = createBrowserRouter([
       {
         path: "/", 
         element: <Homepage />
+      },
+      {
+        path: "/sign-In/*", 
+        element: <SigninPage />
+      },
+      {
+        path: "/sign-Up/*", 
+        element: <SignupPage />
       },
       {
         element: <DashboardLayout />,
