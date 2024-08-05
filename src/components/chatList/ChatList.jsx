@@ -15,6 +15,11 @@ const ChatList = () => {
             <Link>My chat title</Link>
             <Link>My chat title</Link>
             <Link>My chat title</Link>
+            <Link>My chat title</Link>
+            <Link>My chat title</Link>
+            <Link>My chat title</Link>
+            <Link>My chat title</Link>
+            
         </div>
         <hr />
         <div className="upgrade">
