@@ -3,6 +3,7 @@ import './newPrompt.css'
 import Upload from '../upload/Upload'
 import { IKImage } from 'imagekitio-react'
 import model from "../../lib/gemini"
+import Markdown from "react-markdown"
 
 const NewPrompt = () => {
 
@@ -12,21 +13,51 @@ const NewPrompt = () => {
   const [img, setImg] = useState({
     isLoading: false,
     error: "",
-    dbData: {}
-  })
+    dbData: {},
+    aiData: {}
+  });
+
+  const chat = model.startChat({
+    history: [
+      {
+        role: "user",
+        parts: [{ text: "Hello, I have 2 dogs in my house." }],
+      },
+      {
+        role: "model",
+        parts: [{ text: "Great to meet you. What would you like to know?" }],
+      },
+    ],
+    generationConfig: {
+      //maxOutputTokens: 100,
+    },
+  });
 
     const endRef = useRef(null)
 
     useEffect(() => {
       endRef.current.scrollIntoView({behavior: "smooth"})
-    },[]);
+    },[question, answer, img.dbData]);
 
     const add = async (text) => {
       setQuestion(text)
 
-      const result = await model.generateContent(text);
-      const response = await result.response;
-      setAnswer(response.text())
+      const result = await chat.sendMessageStream(
+        Object.entries(img.aiData).length ? [img.aiData, text] : [text]
+      );
+      let accumulatedText = '';
+      for await (const chunk of result.stream) {
+        const chunkText = chunk.text();
+        console.log(chunkText);
+        accumulatedText += chunkText;
+        setAnswer(accumulatedText)
+      }
+      setImg({
+        isLoading: false,
+        error: "",
+        dbData: {},
+        aiData: {}
+      });
     };
 
     const handleSubmit = async (e) =>{
@@ -37,7 +68,7 @@ const NewPrompt = () => {
 
       add(text)
 
-    }
+    };
 
   return (
     <>
@@ -52,7 +83,12 @@ const NewPrompt = () => {
       )}
 
       {question && <div className="message user">{question}</div> }
-      {answer && <div className="message">{answer}</div> }
+      {answer && <div className="message">
+        <Markdown>
+          {answer}
+        </Markdown>
+      </div> 
+      }
       <div className="endChat" ref={endRef}></div>
       <form className="newForm" onSubmit={handleSubmit}>
           <Upload setImg={setImg} />
